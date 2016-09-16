@@ -36,6 +36,40 @@ module.exports = function(server) {
     });
 
     server.route({
+        method: 'GET',
+        path: '/deck/{id}/theme',
+        handler: handlers.getTheme,
+        config: {
+            validate: {
+                params: {
+                    id: Joi.string()
+                }
+            },
+            tags: ['api'],
+            description: 'Get the theme of a deck'
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/deck/{id}/theme',
+        handler: handlers.setTheme,
+        config: {
+            validate: {
+                params: {
+                    id: Joi.string()
+                },
+                payload: Joi.object().keys({
+                    theme: Joi.string().lowercase().allow(''),
+                    newRevision: Joi.boolean()
+                }).requiredKeys('theme', 'newRevision')
+            },
+            tags: ['api'],
+            description: 'Set the theme of a deck in the actve revision'
+        }
+    });
+
+    server.route({
         method: 'POST',
         path: '/deck/new',
         handler: handlers.newDeck,
@@ -56,7 +90,8 @@ module.exports = function(server) {
                         revision: Joi.string().alphanum().lowercase()
                     }),
                     //position: Joi.string().alphanum().lowercase().min(0),
-                    license: Joi.string().valid('CC0', 'CC BY', 'CC BY-SA')
+                    license: Joi.string().valid('CC0', 'CC BY', 'CC BY-SA'),
+                    theme: Joi.string().lowercase().allow('').optional()
                 }).requiredKeys('user', 'license'),
             },
             tags: ['api'],

@@ -64,10 +64,8 @@ const deckRevision = {
             minimum: 0
         },
         theme: {
-            type: 'object',
-            properties: {
-                default: objectid
-            }
+            type: 'string',
+            enum: ['beige', 'black', 'blood', 'league', 'moon', 'night', 'serif', 'simple', 'sky', 'solarized', 'white', null, '']
         },
         transition: {
             type: 'object',

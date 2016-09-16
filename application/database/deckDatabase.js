@@ -479,6 +479,7 @@ function getOrder(activeRevision){
     else return 0;
 }
 
+//TODO Should be savely removed
 function convertDeck(deck) {
     let now = new Date();
     return {
@@ -524,7 +525,8 @@ function convertToNewDeck(deck){
             user: deck.user,
             license: deck.license,
             parent: deck.parent_deck,
-            contentItems: []
+            contentItems: [],
+            theme: deck.theme ? deck.theme : ''
         }]
     };
     //console.log('from', slide, 'to', result);
@@ -546,7 +548,8 @@ function convertDeckWithNewRevision(deck, newRevisionId, content_items, usageArr
             license: deck.license,
             title: deck.title,
             parent: deck.parent_deck,
-            contentItems: content_items
+            contentItems: content_items,
+            theme: deck.theme ? deck.theme : ''
         }]
     };
     //console.log('from', slide, 'to', result);

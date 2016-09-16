@@ -134,6 +134,8 @@ let self = module.exports = {
         });
     },
     newDeck: function(request, reply) {
+        //TODO use ajv to validate data
+
         //NOTE shall the response be cleaned or enhanced with values?
         deckDB.insert(request.payload).then((inserted) => {
             if (co.isEmpty(inserted.ops) || co.isEmpty(inserted.ops[0]))
@@ -188,6 +190,8 @@ let self = module.exports = {
     },
 
     updateDeckRevision: function(request, reply) {
+        //TODO use ajv to validate data
+
         //NOTE shall the payload and/or response be cleaned or enhanced with values?
         deckDB.replace(encodeURIComponent(request.params.id), request.payload).then((replaced) => {
             if (co.isEmpty(replaced.value))
@@ -516,5 +520,31 @@ let self = module.exports = {
         .then((editorsList) => {
             reply(editorsList);
         });
+    },
+
+    getTheme: function(request, reply){
+        deckDB.get(encodeURIComponent(request.params.id)).then((deck) => {
+            if (co.isEmpty(deck))
+                reply(boom.notFound());
+            else {
+                let theme = '';
+                // console.log(deck.revisions);
+                for (let revisionKey in deck.revisions) {
+                    // console.log(deck.revisions[revisionKey], deck.active);
+                    if (deck.revisions[revisionKey].id.toString() === deck.active.toString())
+                        theme = deck.revisions[revisionKey].theme;
+                }
+                reply(theme);
+            }
+        }).catch((error) => {
+            console.log(error);
+            request.log('error', error);
+            reply(boom.badImplementation());
+        });
+    },
+
+    setTheme: function(request, reply){
+        // either update the document: db.decks.update({"_id": 1}, {$set: { "revisions.0.theme": "dummy"}})
+        // or create a new revision depending on payload
     }
 };
