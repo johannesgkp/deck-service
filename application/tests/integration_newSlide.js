@@ -30,10 +30,14 @@ describe('REST API', () => {
     let middleData = {
         title: 'Dummy',
         content: 'dummy',
+		speakernotes: 'dummy speakerNotes',
         language: 'en',
         license: 'CC0',
         user: '1',
-        root_deck: '25-1'
+        root_deck: '25-1',
+		comment: 'dummy commentString',
+		description: 'dummy descriptionString',
+		tags: ['tag1', 'tag2']
     };
 	let fullData = {
         title: 'Dummy',
@@ -90,7 +94,7 @@ describe('REST API', () => {
             });
         });
 				
-		it('should reply informations for the full Data (contributors, id, language, lastUpdate, license, revisions, timestamp, user )', () => {
+		it('should reply informations for the full Data (contributors, id, language, lastUpdate, license, revisions, timestamp, user )', () => {//TODO
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = fullData;
             return server.inject(opt).then((response) => {
