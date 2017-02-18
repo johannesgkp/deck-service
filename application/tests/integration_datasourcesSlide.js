@@ -20,8 +20,8 @@ describe('REST API', () => {
     });
 
     let minimalData = {
-		id: '999999',
-        dataSources: ['wikipedia.org']//QUESTION are books allowed?
+        dataSources: []
+        //dataSources: [{first: 'wikipedia.org'}]//QUESTION are books allowed?
     };
     let minimalDataPost = {
         content: 'dummy',
@@ -63,25 +63,19 @@ describe('REST API', () => {
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-				//console.log(payload.id);
-				opt.payload.id = payload.id;
-				//console.log('opt.payload.id');
-				//console.log(opt.payload.id);
+				opt.url += payload.id;
             }).then(() => {
                 return server.inject(opt);
             }).then((response) => {
-				console.log('opt.payload.id');
-				console.log(opt.payload.id);
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
-                let payload2 = JSON.parse(response.payload);
-                payload2.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload2.license.should.equal('CC0');
-                payload2.user.should.equal(1);
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('array');
             });
         }); 
-		
+
+		/*
         it('should have different timestamp than lastUpdate)', () => {
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = minimalData;
@@ -99,8 +93,8 @@ describe('REST API', () => {
                 payload.license.should.equal('CC0');
                 payload.lastUpdate.should.equal(payload.timestamp);
                 payload.user.should.equal(1);
-				opt.payload.id = payload.id;
-				optG.payload.id = payload.id;
+				opt.url += payload.id;
+				optG.url += payload.id;
             }).then(() => {
 			    //PUT
                 return server.inject(opt);
@@ -108,10 +102,8 @@ describe('REST API', () => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
-                let payload2 = JSON.parse(response.payload);
-                payload2.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload2.license.should.equal('CC0');
-                payload2.user.should.equal(1);
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('array');
             }).then(() => {
 			    //GET
                 return server.inject(optG);
@@ -119,34 +111,33 @@ describe('REST API', () => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
-                let payload3 = JSON.parse(response.payload);
-                payload3.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload3.license.should.equal('CC0');
-                payload3.lastUpdate.should.equal(payload2.timestamp);
-                payload3.lastUpdate.should.not.equal(payload3.timestamp);
-                payload3.user.should.equal(1);
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', '_id', 'description', 'language', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+                payload.license.should.equal('CC0');
+                payload.lastUpdate.should.equal(payload.timestamp);
+                payload.lastUpdate.should.not.equal(payload.timestamp);
+                payload.user.should.equal(1);
             });
         }); 
+		*/
 		
 		it('should reply 404 for a not existing slide', () => {
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = minimalData; 
+			opt.url ='/slide/datasources/9001';
             return server.inject(opt).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
-                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload.license.should.equal('CC0');
-                payload.lastUpdate.should.equal(payload.timestamp);
-                payload.user.should.equal(1);
+                payload.should.be.an('array');
             });
         });
 		
 		it('should reply 400 if the id is not an id', () => {
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = minimalData; 
-            opt.payload.id = 'notAnId'; 
+			opt.url ='/slide/datasources/notAnId';
             return server.inject(opt).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(400);
@@ -169,17 +160,16 @@ describe('REST API', () => {
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-				opt.payload.id = payload.id;
+				opt.url += payload.id;
             }).then(() => {
                 return server.inject(opt);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(400);
                 response.payload.should.be.a('string');
-                let payload2 = JSON.parse(response.payload);
-                payload2.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload2.license.should.equal('CC0');
-                payload2.user.should.equal(1);
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
             });
         });
 		
@@ -195,19 +185,18 @@ describe('REST API', () => {
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-				opt.payload.id = payload.id;
+				opt.url += payload.id;
             }).then(() => {
                 return server.inject(opt)
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(400);
                 response.payload.should.be.a('string');
-                let payload2 = JSON.parse(response.payload);
-                payload2.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload2.license.should.equal('CC0');
-                payload2.user.should.equal(1);
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
             });
         });
-		
+
 	});
 });

@@ -22,15 +22,16 @@ describe('REST API', () => {
     let dataPut = {
         title: 'new title',
         content: 'new content',
-        speakernotes: 'new speakernotes',
-        user: '1',
-        root_deck: '25-1',
-        comment: 'new comment',
-        description: 'new description',
-        tags: ['newTag1', 'newTag2'],
-        language: 'de',
-        license: 'CC1',
-        dataSources: ['wikipedia.org']
+        //speakernotes: 'new speakernotes',
+        //user: '1',
+        //root_deck: '25-1',
+        //comment: 'new comment',
+        //description: 'new description',
+        //tags: ['newTag1', 'newTag2'],
+		//position: '1',
+        //language: 'de',
+        //license: 'CC1',
+        //dataSources: []
     };
     let fullData = {
         title: 'new title',
@@ -119,7 +120,6 @@ describe('REST API', () => {
             let optP = JSON.parse(JSON.stringify(optionsPost));
             optP.payload = dataPost;
             let optG = JSON.parse(JSON.stringify(optionsGet));
-            optG.payload = {id: ''};
 			//POST
             return server.inject(optP).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
@@ -131,8 +131,8 @@ describe('REST API', () => {
 				payload.language.should.equal('en');
 				payload.license.should.equal('CC0');
                 payload.user.should.equal(1);
-				opt.payload.id = payload.id;
-				optG.payload.id = payload.id;
+				opt.url += payload.id;
+				optG.url += payload.id;
             }).then(() => {
 			    //PUT
                 return server.inject(opt);
@@ -151,7 +151,7 @@ describe('REST API', () => {
                 return server.inject(optG);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
-                response.statusCode.should.equal(200);
+                response.statusCode.should.equal(2020);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
