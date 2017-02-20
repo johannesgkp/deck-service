@@ -25,8 +25,8 @@ describe('REST API', () => {
         title: 'new title',
         content: 'new content',
         //speakernotes: 'new speakernotes',
-        //user: '1',
-        //root_deck: '25-1',
+        user: '1',
+        root_deck: '25-1',
         //comment: 'new comment',
         //description: 'new description',
         //tags: ['newTag1', 'newTag2'],
@@ -48,8 +48,9 @@ describe('REST API', () => {
 		tags: ['oldTag1', 'oldTag2']
     };
 	let data = {
-		revision_id: '',
-		root_deck: ''
+		id: 1,
+		user: 1,
+		//root_deck: ''
 	};
     let optionsPut = {
         method: 'PUT',
@@ -108,9 +109,10 @@ describe('REST API', () => {
                 return server.inject(optPu);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
-                response.statusCode.should.equal(2800);
+                response.statusCode.should.equal(400);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
+				console.log(payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'description', 'id', 'language', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
 				payload.description.should.equal('new descriptionString');
 				payload.language.should.equal('de');
@@ -121,9 +123,10 @@ describe('REST API', () => {
                 return server.inject(optR);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
-                response.statusCode.should.equal(2020);
+                response.statusCode.should.equal(400);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
+				console.log(payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
                 payload.license.should.equal('CC0');
                 payload.user.should.equal(1);

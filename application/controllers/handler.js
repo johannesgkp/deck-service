@@ -1431,3 +1431,12 @@ function createThumbnail(slideContent, slideId, user) {
 
     //console.log(slideId);
 }
+
+//This function tries to use request log and uses console.log if this doesnt work - this is the case in unit tests
+function tryRequestLog(request, message, _object) {
+  try {
+    request.log(message, _object);
+  } catch (e) {
+    console.log(message, _object);
+  }
+}
