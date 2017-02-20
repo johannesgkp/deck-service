@@ -29,7 +29,7 @@ describe('REST API', () => {
         //tags: [],
         title: 'title',
         user: '1',
-        root_deck: '25-1', // must only contain alpha-numeric characters
+        root_deck: '25', // must only contain alpha-numeric characters
         //parent_deck: {
         //    id: 'string',
         //    revision: 'string'
@@ -53,12 +53,14 @@ describe('REST API', () => {
         tags: ['tag1', 'tag2'],
         title: 'title',
         user: '1',
-        root_deck: '25-1',
-        //parent_deck: {
-        //    id: '25-1',
-        //    revision: 'string'
-        //},
-        abstract: 'abstract',
+        root_deck: '25',
+        /*
+		parent_deck: {
+            id: '25-1',
+            revision: 'string'
+        },
+		*/
+        //abstract: 'abstract',
         comment: 'comment',
         footer: 'FOOTER',
         first_slide: {
@@ -68,6 +70,7 @@ describe('REST API', () => {
         },
         license: 'CC0'
     };
+	
     let options = {
         method: 'POST',
         url: '/deck/new',
