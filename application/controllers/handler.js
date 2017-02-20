@@ -39,7 +39,7 @@ let self = module.exports = {
             //reply(co.rewriteID(slide));
             reply(slide);
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -57,7 +57,7 @@ let self = module.exports = {
             reply(jsonReply);
 
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -80,7 +80,7 @@ let self = module.exports = {
                 reply(co.rewriteID(inserted.ops[0]));
             }
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -126,14 +126,14 @@ let self = module.exports = {
                         reply(newSlide);
 
                     }).catch((error) => {
-                        request.log('error', error);
+                        tryRequestLog(request, 'error', error);
                         reply(boom.badImplementation());
                     });
 
                   //reply(replaced.value);
                 }
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         });
@@ -156,7 +156,7 @@ let self = module.exports = {
                 reply(replaced.value);
             }
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -183,7 +183,7 @@ let self = module.exports = {
 
             }
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -195,7 +195,7 @@ let self = module.exports = {
             //console.log('updated: ', replaced);
             reply(replaced);
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -255,7 +255,7 @@ let self = module.exports = {
                                             }
                                         }
                                     }).catch((error) => {
-                                        request.log('error', error);
+                                        tryRequestLog(request, 'error', error);
                                         reply(boom.badImplementation());
                                     });
                                     arrayOfSlidePromisses.push(promise);
@@ -265,7 +265,7 @@ let self = module.exports = {
                                 deckRevision.dataSources = dataSources;
                                 reply(deck);
                             }).catch((error) => {
-                                request.log('error', error);
+                                tryRequestLog(request, 'error', error);
                                 reply(boom.badImplementation());
                             });
                         } else {
@@ -280,7 +280,7 @@ let self = module.exports = {
                 }
             }
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -343,7 +343,7 @@ let self = module.exports = {
 
             }
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -359,7 +359,7 @@ let self = module.exports = {
             else
             reply(replaced.value);
         }).catch((error) => {
-            request.log('error', error);
+            tryRequestLog(request, 'error', error);
             reply(boom.badImplementation());
         });
     },
@@ -402,7 +402,7 @@ let self = module.exports = {
 
                     }
                 }).catch((error) => {
-                    request.log('error', error);
+                    tryRequestLog(request, 'error', error);
                     reply(boom.badImplementation());
                 });
             });
@@ -415,7 +415,7 @@ let self = module.exports = {
                 else
                 reply(replaced.value);
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         }
@@ -446,7 +446,7 @@ let self = module.exports = {
                     });
                 }
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         });
@@ -464,7 +464,7 @@ let self = module.exports = {
     //             reply(reverted);
     //         }
     //     }).catch((error) => {
-    //         request.log('error', error);
+    //         tryRequestLog(request, 'error', error);
     //         reply(boom.badImplementation());
     //     });
     // },
@@ -479,7 +479,7 @@ let self = module.exports = {
                     reply(reverted.value);
                 }
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         }
@@ -505,7 +505,7 @@ let self = module.exports = {
 
                 }
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         }
@@ -824,7 +824,7 @@ let self = module.exports = {
                     }
 
                 }).catch((error) => {
-                    request.log('error', error);
+                    tryRequestLog(request, 'error', error);
                     reply(boom.badImplementation());
                 });
             });
@@ -884,7 +884,7 @@ let self = module.exports = {
           //         else
           //         reply(renamed.value);
           //     }).catch((error) => {
-          //         request.log('error', error);
+          //         tryRequestLog(request, 'error', error);
           //         reply(boom.badImplementation());
           //     });
           //   });
@@ -1130,17 +1130,17 @@ let self = module.exports = {
                                 reply(changeSet);
                             }
                         }).catch((e) => {
-                            request.log('error', e);
+                            tryRequestLog(request, 'error', e);
                             reply(boom.badImplementation());
                         });;
                     });
                 }).catch((err) => {
-                    request.log('error', err);
+                    tryRequestLog(request, 'error', err);
                     reply(boom.badImplementation());
                 });;
 
             }).catch((error) => {
-                request.log('error', error);
+                tryRequestLog(request, 'error', error);
                 reply(boom.badImplementation());
             });
         }

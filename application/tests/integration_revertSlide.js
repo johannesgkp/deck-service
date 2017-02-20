@@ -1,6 +1,8 @@
 /* eslint dot-notation: 0, no-unused-vars: 0 */
 'use strict';
 
+//Mocking is missing completely TODO add mocked objects
+
 describe('REST API', () => {
 
     let server;
@@ -18,23 +20,20 @@ describe('REST API', () => {
         require('../routes.js')(server);
         done();
     });
-
-    let dataPut = {
-        //title: 'new title',
+	
+   let dataPut = {
+        title: 'new title',
         content: 'new content',
         //speakernotes: 'new speakernotes',
-        user: '1',
-        root_deck: '25-1'
+        //user: '1',
+        //root_deck: '25-1',
         //comment: 'new comment',
         //description: 'new description',
         //tags: ['newTag1', 'newTag2'],
 		//position: '1',
         //language: 'de',
-        //license: 'CC BY',
-        //dataSources: [{
-        //    type: 'type',
-        //    title: 'title'
-        //}]
+        //license: 'CC1',
+        //dataSources: []
     };
     let dataPost = {
         title: 'old title',
@@ -48,6 +47,10 @@ describe('REST API', () => {
 		description: 'old descriptionString',
 		tags: ['oldTag1', 'oldTag2']
     };
+	let data = {
+		revision_id: '',
+		root_deck: ''
+	};
     let optionsPut = {
         method: 'PUT',
         url: '/slide/',
@@ -68,15 +71,24 @@ describe('REST API', () => {
         headers: {
             'Content-Type': 'application/json'
         }
+    }; 
+	let options = {
+        method: 'POST',
+        url: '/slide/revert/',
+        headers: {
+            'Content-Type': 'application/json'
+        }
     };
 	
-    context('when changing data from a slide it', () => {
-        it('should change the data for an existing slide', () => {
-            let optPu = JSON.parse(JSON.stringify(optionsPut));
+    context('when reverting a slide it', () => {
+        it('should revert the slide', () => {
+            let optPu= JSON.parse(JSON.stringify(optionsPut));
             optPu.payload = dataPut;
             let optP = JSON.parse(JSON.stringify(optionsPost));
             optP.payload = dataPost;
             let optG = JSON.parse(JSON.stringify(optionsGet));
+            let optR = JSON.parse(JSON.stringify(options));
+			optR.payload = data;
 			//POST
             return server.inject(optP).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
@@ -90,6 +102,7 @@ describe('REST API', () => {
                 payload.user.should.equal(1);
 				optPu.url += payload.id;
 				optG.url += payload.id;
+				optR.url += payload.id;
             }).then(() => {
 			    //PUT
                 return server.inject(optPu);
@@ -104,6 +117,18 @@ describe('REST API', () => {
 				payload.license.should.equal('CC1');
                 payload.user.should.equal(1);
             }).then(() => {
+			    //revert
+                return server.inject(optR);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(2020);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+                payload.license.should.equal('CC0');
+                payload.user.should.equal(1);
+            
+            }).then(() => {
 			    //GET
                 return server.inject(optG);
             }).then((response) => {
@@ -116,6 +141,5 @@ describe('REST API', () => {
                 payload.user.should.equal(1);
             });
         }); 
-		
 	});
 });

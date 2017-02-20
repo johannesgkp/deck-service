@@ -29,7 +29,7 @@ describe('REST API', () => {
         //tags: [],
         title: 'title',
         user: '1',
-        root_deck: '25-2',
+        root_deck: '25-1', // must only contain alpha-numeric characters
         //parent_deck: {
         //    id: 'string',
         //    revision: 'string'
@@ -91,7 +91,7 @@ describe('REST API', () => {
                 payload.user.should.equal(1);
             });
         }); 
-		
+		/*
         it('should reply informations for the full Data(contributors, id, lastUpdate, license, revisions, timestamp, user)', () => {
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = fullData;
@@ -106,5 +106,6 @@ describe('REST API', () => {
                 payload.user.should.equal(1);
             });
         }); 
+		*/
 	});
 });

@@ -18,10 +18,23 @@ describe('REST API', () => {
         require('../routes.js')(server);
         done();
     });
-
+	
     let minimalData = {
-        dataSources: []
-        //dataSources: [{first: 'wikipedia.org'}]//QUESTION are books allowed?
+            dataSources: [{
+            type: 'type',
+            title: 'title'
+        }]
+    };
+	
+    let fullData = {
+            dataSources: [{
+            type: 'type',
+            title: 'title',
+            url: 'wikipedi.org',
+            comment: 'comment',
+            authors: 'authors',
+            year: '2000'
+        }]
     };
     let minimalDataPost = {
         content: 'dummy',
@@ -52,7 +65,7 @@ describe('REST API', () => {
     };
 	
     context('when adding datasources to a slide it', () => {
-        it('should reply 200 for an existing slide', () => {
+        it('should reply 200 for minimalData', () => {
             let opt = JSON.parse(JSON.stringify(options));
             opt.payload = minimalData;
             let optP = JSON.parse(JSON.stringify(optionsPost));
@@ -74,29 +87,20 @@ describe('REST API', () => {
                 payload.should.be.an('array');
             });
         }); 
-
-		/*
-        it('should have different timestamp than lastUpdate)', () => {
+		
+        it('should reply 200 for fullData', () => {
             let opt = JSON.parse(JSON.stringify(options));
-            opt.payload = minimalData;
+            opt.payload = fullData;
             let optP = JSON.parse(JSON.stringify(optionsPost));
             optP.payload = minimalDataPost;
-            let optG = JSON.parse(JSON.stringify(optionsGet));
-            optG.payload = {id: ''};
-			//POST
             return server.inject(optP).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload.license.should.equal('CC0');
-                payload.lastUpdate.should.equal(payload.timestamp);
-                payload.user.should.equal(1);
 				opt.url += payload.id;
-				optG.url += payload.id;
             }).then(() => {
-			    //PUT
                 return server.inject(opt);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
@@ -104,22 +108,141 @@ describe('REST API', () => {
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('array');
-            }).then(() => {
-			    //GET
-                return server.inject(optG);
-            }).then((response) => {
+            });
+        }); 
+		
+        it('should reply 400 for if type is missing', () => {
+            let opt = JSON.parse(JSON.stringify(options));
+            opt.payload = {
+                dataSources: [{
+			        //type: 'type',
+                    title: 'title'
+                }]
+            };
+            let optP = JSON.parse(JSON.stringify(optionsPost));
+            optP.payload = minimalDataPost;
+            return server.inject(optP).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
                 response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
-                payload.should.be.an('object').and.contain.keys('contributors', '_id', 'description', 'language', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
-                payload.license.should.equal('CC0');
-                payload.lastUpdate.should.equal(payload.timestamp);
-                payload.lastUpdate.should.not.equal(payload.timestamp);
-                payload.user.should.equal(1);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+				opt.url += payload.id;
+            }).then(() => {
+                return server.inject(opt);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(400);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
             });
         }); 
-		*/
+		
+        it('should reply 400 for if title is missing', () => {
+            let opt = JSON.parse(JSON.stringify(options));
+            opt.payload = {
+                dataSources: [{
+					//title: 'title',
+                    type: 'type'
+                }]
+            };
+            let optP = JSON.parse(JSON.stringify(optionsPost));
+            optP.payload = minimalDataPost;
+            return server.inject(optP).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(200);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+				opt.url += payload.id;
+            }).then(() => {
+                return server.inject(opt);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(400);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
+            });
+        }); 
+		
+        it('should reply 400 if type is not a valid type', () => {//TODO
+            let opt = JSON.parse(JSON.stringify(options));
+            opt.payload = fullData;
+			opt.payload.dataSources.type = 'notAValidType';
+            let optP = JSON.parse(JSON.stringify(optionsPost));
+            optP.payload = minimalDataPost;
+            return server.inject(optP).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(200);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+				opt.url += payload.id;
+            }).then(() => {
+                return server.inject(opt);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(400);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
+            });
+        }); 
+		
+        it('should reply 400 if url is not a valid url', () => {
+            let opt = JSON.parse(JSON.stringify(options));
+            opt.payload = fullData;
+			opt.payload.dataSources.url = 'notAValidUrl';
+            let optP = JSON.parse(JSON.stringify(optionsPost));
+            optP.payload = minimalDataPost;
+            return server.inject(optP).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(200);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+				opt.url += payload.id;
+            }).then(() => {
+                return server.inject(opt);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(400);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
+            });
+        }); 
+		
+        it('should reply 400 if year is not a valid year', () => {
+            let opt = JSON.parse(JSON.stringify(options));
+            opt.payload = fullData;
+			opt.payload.dataSources.year = 'notAValidYear';
+            let optP = JSON.parse(JSON.stringify(optionsPost));
+            optP.payload = minimalDataPost;
+            return server.inject(optP).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(200);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('contributors', 'id', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
+				opt.url += payload.id;
+            }).then(() => {
+                return server.inject(opt);
+            }).then((response) => {
+                response.should.be.an('object').and.contain.keys('statusCode','payload');
+                response.statusCode.should.equal(400);
+                response.payload.should.be.a('string');
+                let payload = JSON.parse(response.payload);
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Bad Request');
+            });
+        }); 
 		
 		it('should reply 404 for a not existing slide', () => {
             let opt = JSON.parse(JSON.stringify(options));
@@ -127,10 +250,11 @@ describe('REST API', () => {
 			opt.url ='/slide/datasources/9001';
             return server.inject(opt).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
-                response.statusCode.should.equal(200);
+                response.statusCode.should.equal(404);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
-                payload.should.be.an('array');
+                payload.should.be.an('object').and.contain.keys('statusCode', 'error', 'message', 'validation');
+                payload.error.should.be.a('string').and.equal('Not Found');
             });
         });
 		
