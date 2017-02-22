@@ -95,7 +95,7 @@ describe('REST API', () => {
                 return server.inject(optPu);
             }).then((response) => {
                 response.should.be.an('object').and.contain.keys('statusCode','payload');
-                response.statusCode.should.equal(2800);
+                response.statusCode.should.equal(200);
                 response.payload.should.be.a('string');
                 let payload = JSON.parse(response.payload);
                 payload.should.be.an('object').and.contain.keys('contributors', 'description', 'id', 'language', 'lastUpdate', 'license', 'revisions', 'timestamp', 'user');
